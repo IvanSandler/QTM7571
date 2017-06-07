@@ -1,0 +1,41 @@
+## Load packages
+source("file:///C:/Users/sandli/Documents/Babson/Summer 2017/Data BI Viz/New folder/QTM7571.R")
+library(gmodels)
+library(class)
+library(readr)
+library(rpart)
+library(rpart.plot)
+library(rattle)
+
+## Load Data
+df = read_excel("C:/Users/sandli/Downloads/evergreen (1).xlsx")
+
+## Manage Data
+df$label = as.logical(df$label)
+df$url = NULL
+df$boilerplate = NULL
+df$alchemy_category = as.factor(df$alchemy_category)
+df$is_news = as.logical(df$is_news)
+df$lengthyLinkDomain = as.logical(df$lengthyLinkDomain)
+df$alchemy_category_score = NULL
+
+## Partition Data
+N = nrow(df)
+trainingSize = round(N*0.75)
+trainingCases = sample(N, trainingSize)
+training = df[ trainingCases , ]
+test = df[-trainingCases, ]
+
+## Build the model
+model = rpart(PersonalLoan ~ ., data=training)
+pruned = easyPrune(model)
+fancyRpartPlot(pruned, main="Full Tree")
+pred = predict(pruned, test, type="class") ## Error: "Invalid prediction for "rpart" object"
+summary(pruned)
+CrossTable(test$label, pred, expected=F, prop.r=F, prop.c=F, prop.t=F, prop.chisq=F)
+
+# Benchmark Error
+BenchmarkError = benchmarkErrorRate(training$label, test$label)
+
+## Error Rate
+errorRate = sum(pred != test$label)/nrow(test)

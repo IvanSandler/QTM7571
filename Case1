@@ -27,7 +27,7 @@ training = df[ trainingCases , ]
 test = df[-trainingCases, ]
 
 ## Build the model
-model = rpart(PersonalLoan ~ ., data=training)
+model = rpart(label ~ ., data=training)
 pruned = easyPrune(model)
 fancyRpartPlot(pruned, main="Full Tree")
 pred = predict(pruned, test, type="class") ## Error: "Invalid prediction for "rpart" object"

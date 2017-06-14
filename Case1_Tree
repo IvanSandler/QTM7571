@@ -11,7 +11,7 @@ library(rattle)
 df = read_excel("C:/Users/sandli/Downloads/evergreen (1).xlsx")
 
 ## Manage Data
-df$label = as.logical(df$label)
+df$label = as.factor(df$label)
 df$url = NULL
 df$boilerplate = NULL
 df$alchemy_category = as.factor(df$alchemy_category)
@@ -30,9 +30,10 @@ test = df[-trainingCases, ]
 model = rpart(label ~ ., data=training)
 pruned = easyPrune(model)
 fancyRpartPlot(pruned, main="Full Tree")
-pred = predict(pruned, test, type="class") ## Error: "Invalid prediction for "rpart" object"
+pred = predict(pruned, test, type="class") 
 summary(pruned)
-CrossTable(test$label, pred, expected=F, prop.r=F, prop.c=F, prop.t=F, prop.chisq=F)
+## Probably dont need this... 
+## CrossTable(test$label, pred, expected=F, prop.r=F, prop.c=F, prop.t=F, prop.chisq=F)
 
 # Benchmark Error
 BenchmarkError = benchmarkErrorRate(training$label, test$label)
